@@ -82,7 +82,7 @@
 <div class="container">
 
   <div class="form-section">
-    <h2>เก็บเงินค่าหมุทะ</h2>
+    <h2>บันทึกการจ่ายเงินหมูกระทะ</h2>
     <input type="text" id="name" placeholder="ชื่อผู้จ่าย" required>
     <input type="number" id="amount" placeholder="จำนวนเงินที่จ่าย" step="0.01" required>
     <button onclick="submitPayment()">บันทึกการจ่าย</button>
@@ -100,7 +100,16 @@
 
 <script>
   const pricePerPerson = 209;
-  let payments = JSON.parse(localStorage.getItem('payments')) || {};
+  let payments = {}; 
+
+  // Function to load payments from localStorage when the page is loaded
+  function loadPayments() {
+    const storedPayments = localStorage.getItem('payments');
+    if (storedPayments) {
+      payments = JSON.parse(storedPayments);
+    }
+    render();
+  }
 
   function submitPayment() {
     const name = document.getElementById("name").value.trim();
@@ -148,8 +157,8 @@
       li.innerHTML = ` 
         <strong>${name}</strong>: ${payment.amount_paid.toFixed(2)} บาท<br>
         ${payment.change >= 0
-          ? `ทอน: ${payment.change.toFixed(2)} บาทฮ้าฟฟอ้วง`
-          : `ยังขาดอีก: ${(-payment.change).toFixed(2)} บาทไอสัส`
+          ? `ทอน: ${payment.change.toFixed(2)} บาท`
+          : `ยังขาด: ${(-payment.change).toFixed(2)} บาท`
         }
         <br>
         <button class="delete-btn" onclick="deletePayment('${name}')">ลบ</button>
@@ -164,8 +173,8 @@
     document.getElementById("totalChange").innerText = totalChange.toFixed(2);
   }
 
-  // Initial render when page loads
-  window.onload = render;
+  // Load payments on page load
+  window.onload = loadPayments;
 </script>
 
 </body>
