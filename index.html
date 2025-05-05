@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>คำนวนค่าหมุทะ</title>
+  <title>บันทึกการจ่ายเงินหมูกระทะ</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -82,7 +82,7 @@
 <div class="container">
 
   <div class="form-section">
-    <h2>คำนวนค่าหมุทะ</h2>
+    <h2>เก็บเงินค่าหมุทะ</h2>
     <input type="text" id="name" placeholder="ชื่อผู้จ่าย" required>
     <input type="number" id="amount" placeholder="จำนวนเงินที่จ่าย" step="0.01" required>
     <button onclick="submitPayment()">บันทึกการจ่าย</button>
@@ -100,7 +100,7 @@
 
 <script>
   const pricePerPerson = 209;
-  const payments = {};
+  let payments = JSON.parse(localStorage.getItem('payments')) || {};
 
   function submitPayment() {
     const name = document.getElementById("name").value.trim();
@@ -111,6 +111,9 @@
     const change = amount - pricePerPerson;
     payments[name] = { amount_paid: amount, change: change };
 
+    // Save to localStorage
+    localStorage.setItem('payments', JSON.stringify(payments));
+
     document.getElementById("name").value = "";
     document.getElementById("amount").value = "";
 
@@ -118,14 +121,14 @@
   }
 
   function resetPayments() {
-    for (let key in payments) {
-      delete payments[key];
-    }
+    payments = {};
+    localStorage.removeItem('payments'); // Clear localStorage
     render();
   }
 
   function deletePayment(name) {
     delete payments[name];
+    localStorage.setItem('payments', JSON.stringify(payments)); // Update localStorage
     render();
   }
 
@@ -142,10 +145,10 @@
 
       const li = document.createElement("li");
       li.className = "person";
-      li.innerHTML = `
+      li.innerHTML = ` 
         <strong>${name}</strong>: ${payment.amount_paid.toFixed(2)} บาท<br>
         ${payment.change >= 0
-          ? `ทอน: ${payment.change.toFixed(2)} บาทฮ้าฟอ้วงง`
+          ? `ทอน: ${payment.change.toFixed(2)} บาทฮ้าฟฟอ้วง`
           : `ยังขาดอีก: ${(-payment.change).toFixed(2)} บาทไอสัส`
         }
         <br>
@@ -160,8 +163,10 @@
     document.getElementById("totalPaid").innerText = totalPaid.toFixed(2);
     document.getElementById("totalChange").innerText = totalChange.toFixed(2);
   }
+
+  // Initial render when page loads
+  window.onload = render;
 </script>
 
 </body>
 </html>
-
