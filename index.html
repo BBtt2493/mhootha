@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>บันทึกการจ่ายเงินหมูกระทะ</title>
+  <title>จ่ายเงินค่าหมูกระทะ</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -82,7 +82,7 @@
 <div class="container">
 
   <div class="form-section">
-    <h2>บันทึกการจ่ายเงินหมูกระทะ</h2>
+    <h2>เงินค่าหมุทะ</h2>
     <input type="text" id="name" placeholder="ชื่อผู้จ่าย" required>
     <input type="number" id="amount" placeholder="จำนวนเงินที่จ่าย" step="0.01" required>
     <button onclick="submitPayment()">บันทึกการจ่าย</button>
@@ -157,8 +157,8 @@
       li.innerHTML = ` 
         <strong>${name}</strong>: ${payment.amount_paid.toFixed(2)} บาท<br>
         ${payment.change >= 0
-          ? `ทอน: ${payment.change.toFixed(2)} บาท`
-          : `ยังขาด: ${(-payment.change).toFixed(2)} บาท`
+          ? `ทอน: ${payment.change.toFixed(2)} บาทง้าบอ้วงง`
+          : `ยังขาดอีก: ${(-payment.change).toFixed(2)} บาทไอสัส`
         }
         <br>
         <button class="delete-btn" onclick="deletePayment('${name}')">ลบ</button>
