@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>บันทึกการจ่ายเงินหมูกระทะ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      display: flex;
+      gap: 30px;
+      width: 90%;
+      max-width: 1000px;
+    }
+
+    .form-section, .result-section {
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      flex: 1;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .reset-btn {
+      background-color: #f44336;
+    }
+
+    .reset-btn:hover {
+      background-color: #e53935;
+    }
+
+    .delete-btn {
+      background-color: #ff9800;
+      margin-top: 5px;
+    }
+
+    .delete-btn:hover {
+      background-color: #f57c00;
+    }
+
+    h2, h3 {
+      color: #333;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    .person {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="form-section">
+    <h2>บันทึกการจ่ายเงินหมูกระทะ</h2>
+    <input type="text" id="name" placeholder="ชื่อผู้จ่าย" required>
+    <input type="number" id="amount" placeholder="จำนวนเงินที่จ่าย" step="0.01" required>
+    <button onclick="submitPayment()">บันทึกการจ่าย</button>
+    <button class="reset-btn" onclick="resetPayments()">เคลียร์ข้อมูล</button>
+  </div>
+
+  <div class="result-section">
+    <h3>รวมเงินที่ต้องจ่ายทั้งหมด: <span id="totalDue">0</span> บาท</h3>
+    <h3>รวมเงินที่จ่ายไปแล้ว: <span id="totalPaid">0</span> บาท</h3>
+    <h3>รวมเงินที่ต้องทอนคืน: <span id="totalChange">0</span> บาท</h3>
+    <ul id="paymentList"></ul>
+  </div>
+
+</div>
+
+<script>
+  const pricePerPerson = 209;
+  const payments = {};
+
+  function submitPayment() {
+    const name = document.getElementById("name").value.trim();
+    const amount = parseFloat(document.getElementById("amount").value);
+
+    if (!name || isNaN(amount)) return;
+
+    const change = amount - pricePerPerson;
+    payments[name] = { amount_paid: amount, change: change };
+
+    document.getElementById("name").value = "";
+    document.getElementById("amount").value = "";
+
+    render();
+  }
+
+  function resetPayments() {
+    for (let key in payments) {
+      delete payments[key];
+    }
+    render();
+  }
+
+  function deletePayment(name) {
+    delete payments[name];
+    render();
+  }
+
+  function render() {
+    const paymentList = document.getElementById("paymentList");
+    paymentList.innerHTML = "";
+
+    let totalPaid = 0;
+    let totalChange = 0;
+
+    for (const [name, payment] of Object.entries(payments)) {
+      totalPaid += payment.amount_paid;
+      if (payment.change > 0) totalChange += payment.change;
+
+      const li = document.createElement("li");
+      li.className = "person";
+      li.innerHTML = `
+        <strong>${name}</strong>: ${payment.amount_paid.toFixed(2)} บาท<br>
+        ${payment.change >= 0
+          ? `ทอน: ${payment.change.toFixed(2)} บาท`
+          : `ยังขาด: ${(-payment.change).toFixed(2)} บาท`
+        }
+        <br>
+        <button class="delete-btn" onclick="deletePayment('${name}')">ลบ</button>
+      `;
+      paymentList.appendChild(li);
+    }
+
+    const totalDue = Object.keys(payments).length * pricePerPerson;
+
+    document.getElementById("totalDue").innerText = totalDue.toFixed(2);
+    document.getElementById("totalPaid").innerText = totalPaid.toFixed(2);
+    document.getElementById("totalChange").innerText = totalChange.toFixed(2);
+  }
+</script>
+
+</body>
+</html>
+
